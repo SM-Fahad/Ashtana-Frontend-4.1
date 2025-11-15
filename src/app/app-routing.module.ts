@@ -24,6 +24,7 @@ import { ProductsComponent } from './pages/products/products.component';
 import { ProductDetailsComponent } from './pages/product-details/product-details.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { BagComponent } from './components/bag/bag.component';
+import { OrderDetailsComponent } from './components/order-details/order-details.component';
 
 
 const routes: Routes = [
@@ -46,6 +47,7 @@ const routes: Routes = [
   { path: 'color-list', component: ColorListComponent },
   { path: 'color-add', component: ColorAddComponent },
   { path: 'size-list', component: SizeListComponent },
+  { path: 'orders/:id', component: OrderDetailsComponent },
   { path: 'size-add', component: SizeFormComponent },
   { path: 'sub-category-list', component: SubCategoryListComponent },
   { path: 'sub-category-add', component: SubCategoryFormComponent },

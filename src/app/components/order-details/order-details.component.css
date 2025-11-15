@@ -1,0 +1,506 @@
+/* Order Details Component - Bootstrap Enhanced Styles */
+:host {
+  display: block;
+}
+
+/* Print-specific receipt styles */
+.receipt-print {
+  display: none;
+}
+
+@media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Only show the receipt section */
+  .receipt-print,
+  .receipt-print * {
+    visibility: visible;
+  }
+  
+  /* Position the receipt properly */
+  .receipt-print {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 20px !important;
+  }
+  
+  /* Hide all other elements */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+  
+  /* Receipt-specific styling */
+  .receipt-header {
+    text-align: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .receipt-items table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  
+  .receipt-items th,
+  .receipt-items td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  .receipt-items th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .receipt-summary {
+    margin-top: 1.5rem;
+    border-top: 2px solid #000;
+    padding-top: 1rem;
+  }
+  
+  .receipt-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #666;
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+  }
+  
+  /* Ensure proper page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+  
+  /* Optimize for paper */
+  body {
+    background: white !important;
+    font-size: 12pt;
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  h1, h2, h3, h4 {
+    color: black !important;
+  }
+  
+  /* Remove backgrounds and shadows for printing */
+  .enhanced-card, .card, .bg-light, .help-card {
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
+/* Order Details Component - Bootstrap Enhanced Styles */
+:host {
+  display: block;
+}
+
+/* Enhanced Card Styles */
+.enhanced-card {
+  background: linear-gradient(145deg, #ffffff, #fafafa);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.enhanced-card:hover {
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.08),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Print-specific receipt styles */
+.receipt-print {
+  display: none;
+}
+
+@media print {
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Only show the receipt section */
+  .receipt-print,
+  .receipt-print * {
+    visibility: visible;
+  }
+  
+  /* Position the receipt properly */
+  .receipt-print {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /* Hide all other elements */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+  
+  /* Receipt-specific styling */
+  .receipt-header {
+    text-align: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .receipt-items table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .receipt-items th,
+  .receipt-items td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+  }
+  
+  .receipt-items th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .receipt-summary {
+    margin-top: 1.5rem;
+    border-top: 2px solid #000;
+    padding-top: 1rem;
+  }
+  
+  .receipt-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  /* Ensure proper page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+  
+  /* Optimize for paper */
+  body {
+    background: white !important;
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  h1, h2, h3, h4 {
+    color: black !important;
+  }
+}
+
+/* Rest of your existing CSS remains the same */
+.status-badge {
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  border: none;
+}
+
+.status-badge-pending {
+  background: linear-gradient(135deg, #fef3c7, #f59e0b);
+  color: #92400e;
+}
+
+.status-badge-confirmed {
+  background: linear-gradient(135deg, #dbeafe, #3b82f6);
+  color: #1e40af;
+}
+
+/* ... rest of your existing CSS ... */
+
+/* Enhanced Card Styles */
+.enhanced-card {
+  background: linear-gradient(145deg, #ffffff, #fafafa);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.enhanced-card:hover {
+  box-shadow: 
+    0 10px 15px -3px rgba(0, 0, 0, 0.08),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Status Badges */
+.status-badge {
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  border: none;
+}
+
+.status-badge-pending {
+  background: linear-gradient(135deg, #fef3c7, #f59e0b);
+  color: #92400e;
+}
+
+.status-badge-confirmed {
+  background: linear-gradient(135deg, #dbeafe, #3b82f6);
+  color: #1e40af;
+}
+
+.status-badge-processing {
+  background: linear-gradient(135deg, #e0e7ff, #6366f1);
+  color: #3730a3;
+}
+
+.status-badge-shipped {
+  background: linear-gradient(135deg, #ede9fe, #8b5cf6);
+  color: #5b21b6;
+}
+
+.status-badge-delivered {
+  background: linear-gradient(135deg, #dcfce7, #10b981);
+  color: #065f46;
+}
+
+.status-badge-cancelled {
+  background: linear-gradient(135deg, #fee2e2, #ef4444);
+  color: #991b1b;
+}
+
+/* Progress Bar */
+.progress-container {
+  position: relative;
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 10px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Enhanced Buttons */
+.btn-enhanced {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none;
+  font-weight: 500;
+}
+
+.btn-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-enhanced:active {
+  transform: translateY(0);
+}
+
+/* Loading Animation */
+.loading-spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Fade In Animations */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .enhanced-card {
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+    break-inside: avoid;
+  }
+  
+  .btn-enhanced {
+    display: none !important;
+  }
+}
+
+/* Custom Backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.help-card {
+  background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+  border: 1px solid #3b82f6;
+}
+
+/* Hover Effects */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Text Gradients */
+.text-gradient {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Step Indicators */
+.step-indicator {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.step-completed {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.step-current {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.step-pending {
+  background-color: #e9ecef;
+  color: #6c757d;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .mobile-stack {
+    flex-direction: column;
+  }
+  
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+  
+  .step-indicator {
+    width: 35px;
+    height: 35px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Focus Styles */
+.btn:focus, .btn-enhanced:focus {
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Custom Borders */
+.border-enhanced {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in, .stagger-item, .hover-lift, .btn-enhanced {
+    animation: none;
+    transition: none;
+  }
+  
+  .hover-lift:hover {
+    transform: none;
+  }
+}

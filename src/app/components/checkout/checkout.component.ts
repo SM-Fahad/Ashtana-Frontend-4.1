@@ -8,11 +8,11 @@ import { AddressService } from '../../services/address.service';
 import { PaymentService } from '../../services/payment.service';
 import { CouponService } from '../../services/coupon.service';
 import { Order, CheckoutRequest, Address, PaymentRequest, Coupon, CouponValidationResponse } from '../../models/order';
-import { MyBag } from '../../models/bag';
+import { MyBag, MyBagItem } from '../../models/bag';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // Add this import
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,7 +20,7 @@ import Swal from 'sweetalert2';
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule] // Add FormsModule here
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule]
 })
 export class CheckoutComponent implements OnInit {
   checkoutForm: FormGroup;
@@ -69,11 +69,11 @@ export class CheckoutComponent implements OnInit {
       shippingAddressId: ['', Validators.required],
       billingAddressId: [''],
       paymentMethod: ['COD', Validators.required],
-      // Add payment details form controls
       cardNumber: [''],
       expiryDate: [''],
       cvv: [''],
       cardholderName: [''],
+      paypalEmail: [''],
       agreeToTerms: [false, Validators.requiredTrue]
     });
   }
@@ -89,6 +89,38 @@ export class CheckoutComponent implements OnInit {
       phone: ['', Validators.required],
       type: ['SHIPPING', Validators.required]
     });
+  }
+
+  // Fix the total calculation - based on your backend
+  get subtotal(): number {
+    return this.bag?.totalPrice || 0;
+  }
+
+  get shippingCost(): number {
+    // Free shipping over $100, otherwise $30
+    const subtotal = this.subtotal - this.couponDiscount;
+    return subtotal >= 100 ? 0 : 30;
+  }
+
+  get gstAmount(): number {
+    // GST 5% on discounted subtotal
+    const discountedSubtotal = this.subtotal - this.couponDiscount;
+    return discountedSubtotal * 0.05;
+  }
+
+  get pstAmount(): number {
+    // PST 7% on discounted subtotal
+    const discountedSubtotal = this.subtotal - this.couponDiscount;
+    return discountedSubtotal * 0.07;
+  }
+
+  get totalTax(): number {
+    return this.gstAmount + this.pstAmount;
+  }
+
+  get estimatedTotal(): number {
+    const discountedSubtotal = Math.max(0, this.subtotal - this.couponDiscount);
+    return discountedSubtotal + this.shippingCost + this.gstAmount + this.pstAmount;
   }
 
   // Payment method helper
@@ -107,6 +139,17 @@ export class CheckoutComponent implements OnInit {
   // Getter for COD check
   get isCODPayment(): boolean {
     return this.checkoutForm.get('paymentMethod')?.value === 'COD';
+  }
+
+  // Getter for PayPal check
+  get isPayPalPayment(): boolean {
+    return this.checkoutForm.get('paymentMethod')?.value === 'PAYPAL';
+  }
+
+  // Getter for card payment check
+  get isCardPayment(): boolean {
+    const method = this.checkoutForm.get('paymentMethod')?.value;
+    return method === 'CREDIT_CARD' || method === 'DEBIT_CARD';
   }
 
   loadBag(): void {
@@ -150,14 +193,12 @@ export class CheckoutComponent implements OnInit {
       next: (addresses) => {
         this.addresses = addresses;
         
-        // Set default addresses
         const defaultAddress = addresses[0];
         if (defaultAddress) {
           this.checkoutForm.patchValue({
             shippingAddressId: defaultAddress.id
           });
           
-          // Set billing address to same if using same address
           if (this.useSameAddress) {
             this.checkoutForm.patchValue({
               billingAddressId: defaultAddress.id
@@ -249,6 +290,51 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  // Update item quantity using your API
+  updateQuantity(item: MyBagItem, change: number): void {
+    const newQuantity = item.quantity + change;
+    if (newQuantity < 1) {
+      this.removeItem(item.id);
+      return;
+    }
+
+    this.bagService.updateItemQuantity(item.id, newQuantity).subscribe({
+      next: (updatedItem) => {
+        this.loadBag();
+        Swal.fire({
+          icon: 'success',
+          title: 'Quantity Updated',
+          text: `Quantity updated to ${newQuantity}`,
+          confirmButtonColor: '#000',
+          timer: 1000
+        });
+      },
+      error: (error) => {
+        console.error('Error updating quantity:', error);
+        this.showError('Failed to update quantity', 'Please try again.');
+      }
+    });
+  }
+
+  removeItem(itemId: number): void {
+    this.bagService.removeItemFromBag(itemId).subscribe({
+      next: () => {
+        this.loadBag();
+        Swal.fire({
+          icon: 'success',
+          title: 'Item Removed',
+          text: 'Item has been removed from your bag',
+          confirmButtonColor: '#000',
+          timer: 1500
+        });
+      },
+      error: (error) => {
+        console.error('Error removing item:', error);
+        this.showError('Failed to remove item', 'Please try again.');
+      }
+    });
+  }
+
   // Coupon handling
   applyCoupon(): void {
     if (!this.couponCode.trim()) {
@@ -311,7 +397,7 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  // Checkout
+  // Checkout - FIXED VERSION
   async placeOrder(): Promise<void> {
     if (this.checkoutForm.invalid) {
       this.markFormGroupTouched(this.checkoutForm);
@@ -336,16 +422,20 @@ export class CheckoutComponent implements OnInit {
         paymentMethod: formValue.paymentMethod
       };
 
+      console.log('Sending checkout request:', checkoutRequest);
+
       // Create order
       const order = await this.orderService.checkout(checkoutRequest).toPromise();
       
       if (order) {
-        // Handle payment based on method
-        if (formValue.paymentMethod === 'COD') {
-          await this.handleCODPayment(order);
-        } else {
-          await this.handleOnlinePayment(order);
-        }
+        console.log('Order created successfully:', order);
+        
+        // Show success immediately - no need for separate payment confirmation
+        this.processingOrder = false;
+        this.showOrderSuccess(order);
+        
+        // Clear the bag after successful order
+        this.clearBag();
       }
 
     } catch (error: any) {
@@ -355,50 +445,25 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
-  private async handleCODPayment(order: Order): Promise<void> {
-    try {
-      // For COD, we just need to confirm the payment
-      const payment = await this.paymentService.confirmCOD(order.id).toPromise();
-      this.processingOrder = false;
-      this.showOrderSuccess(order, payment!);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  private async handleOnlinePayment(order: Order): Promise<void> {
-    try {
-      // For online payments, initiate payment process
-      const paymentRequest: PaymentRequest = {
-        orderId: order.id,
-        paymentMethod: order.paymentMethod,
-        amount: order.totalAmount
-      };
-
-      const payment = await this.paymentService.initiatePayment(paymentRequest).toPromise();
-      
-      // Simulate payment processing (in real app, redirect to payment gateway)
-      if (payment) {
-        // Wait for payment to be processed (simulated)
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Check payment status
-        const paymentStatus = await this.paymentService.getPaymentStatus(payment.id).toPromise();
-        this.processingOrder = false;
-        
-        if (paymentStatus?.paymentStatus === 'COMPLETED') {
-          this.showOrderSuccess(order, paymentStatus);
-        } else {
-          this.showError('Payment Failed', 'Your payment could not be processed. Please try again.');
-        }
+  // Clear bag after successful order
+ private clearBag(): void {
+  if (this.bag && this.bag.id) {
+    this.bagService.clearBag(this.bag.id).subscribe({
+      next: () => {
+        console.log('Bag cleared after successful order');
+        this.bag = null; // Clear the local bag reference
+      },
+      error: (error) => {
+        console.error('Error clearing bag:', error);
       }
-    } catch (error) {
-      throw error;
-    }
+    });
+  } else {
+    console.warn('No bag found to clear');
   }
+}
 
-  // Success handler
-  private showOrderSuccess(order: Order, payment: any): void {
+  // Success handler - FIXED: No payment parameter
+  private showOrderSuccess(order: Order): void {
     Swal.fire({
       title: '🎉 Order Placed Successfully!',
       html: `
@@ -406,7 +471,7 @@ export class CheckoutComponent implements OnInit {
           <p><strong>Order Number:</strong> ${order.orderNumber}</p>
           <p><strong>Total Amount:</strong> $${order.totalAmount.toFixed(2)}</p>
           <p><strong>Payment Method:</strong> ${this.getPaymentMethodName(order.paymentMethod)}</p>
-          <p><strong>Payment Status:</strong> ${payment.paymentStatus}</p>
+          <p><strong>Payment Status:</strong> ${order.paymentStatus}</p>
           ${this.appliedCoupon ? `<p><strong>Coupon Applied:</strong> ${this.appliedCoupon.code} ($${this.couponDiscount.toFixed(2)} off)</p>` : ''}
           <p class="mt-3">You will receive an email confirmation shortly.</p>
         </div>
@@ -454,42 +519,30 @@ export class CheckoutComponent implements OnInit {
     return this.addresses.find(addr => addr.id === addressId);
   }
 
-  // Getters for template
-  get shippingCost(): number {
-    return this.bag?.totalPrice && this.bag.totalPrice >= 150 ? 0 : 30;
-  }
-
-  get taxAmount(): number {
-    const subtotal = this.bag?.totalPrice || 0;
-    const discountedSubtotal = subtotal - this.couponDiscount;
-    return discountedSubtotal > 0 ? (discountedSubtotal * 0.12) : 0;
-  }
-
-  get estimatedTotal(): number {
-    const subtotal = this.bag?.totalPrice || 0;
-    const discountedSubtotal = subtotal - this.couponDiscount;
-    return Math.max(0, discountedSubtotal + this.shippingCost + this.taxAmount);
-  }
-
+  // Getters for template validation
   get isStep1Valid(): boolean {
     return this.checkoutForm.get('shippingAddressId')?.valid || false;
   }
 
   get isStep2Valid(): boolean {
-  const paymentMethod = this.checkoutForm.get('paymentMethod')?.value;
-  const isPaymentMethodValid = this.checkoutForm.get('paymentMethod')?.valid ?? false;
-  
-  if (paymentMethod === 'COD') {
-    return isPaymentMethodValid;
+    const paymentMethod = this.checkoutForm.get('paymentMethod')?.value;
+    const isPaymentMethodValid = this.checkoutForm.get('paymentMethod')?.valid ?? false;
+    
+    if (paymentMethod === 'COD') {
+      return isPaymentMethodValid;
+    }
+    
+    if (paymentMethod === 'PAYPAL') {
+      return isPaymentMethodValid && !!this.checkoutForm.get('paypalEmail')?.value;
+    }
+    
+    // For card payments
+    return isPaymentMethodValid && 
+           !!this.checkoutForm.get('cardNumber')?.value &&
+           !!this.checkoutForm.get('expiryDate')?.value &&
+           !!this.checkoutForm.get('cvv')?.value &&
+           !!this.checkoutForm.get('cardholderName')?.value;
   }
-  
-  // For card payments, validate card details
-  return isPaymentMethodValid && 
-         !!this.checkoutForm.get('cardNumber')?.value &&
-         !!this.checkoutForm.get('expiryDate')?.value &&
-         !!this.checkoutForm.get('cvv')?.value &&
-         !!this.checkoutForm.get('cardholderName')?.value;
-}
 
   get isStep3Valid(): boolean {
     return this.checkoutForm.get('agreeToTerms')?.value || false;

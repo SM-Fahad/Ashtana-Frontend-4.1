@@ -8,6 +8,25 @@ export interface OrderItem {
   totalPrice: number;
 }
 
+// export interface Order {
+//   id: number;
+//   orderNumber: string;
+//   userName: string;
+//   subtotalAmount: number;
+//   shippingCost: number;
+//   taxAmount: number;
+//   discountAmount: number;
+//   totalAmount: number;
+//   status: string;
+//   orderDate: string;
+//   shippingAddress: Address;
+//   billingAddress: Address;
+//   couponCode?: string;
+//   paymentMethod: string;
+//   paymentStatus: string;
+//   items: OrderItem[];
+// }
+
 export interface Order {
   id: number;
   orderNumber: string;
@@ -21,9 +40,8 @@ export interface Order {
   orderDate: string;
   shippingAddress: Address;
   billingAddress: Address;
-  couponCode?: string;
   paymentMethod: string;
-  paymentStatus: string;
+  paymentStatus: string; // This is directly on the order, not nested
   items: OrderItem[];
 }
 

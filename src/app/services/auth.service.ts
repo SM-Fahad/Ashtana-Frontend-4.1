@@ -129,4 +129,19 @@ export class AuthService {
   deleteAddress(addressId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/addresses/${addressId}`);
   }
+
+  // Add this method to your AuthService class
+getCurrentUser(): any {
+  const user = this.getUser();
+  if (user) {
+    return {
+      username: user.userName || user.username,
+      firstName: user.userFirstName || user.firstName,
+      lastName: user.userLastName || user.lastName,
+      email: user.email,
+      roles: user.roles || []
+    };
+  }
+  return null;
+}
 }

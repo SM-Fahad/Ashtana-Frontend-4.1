@@ -3,7 +3,7 @@ import { BagService } from '../../services/bag.service';
 import { AuthService } from '../../services/auth.service';
 import { MyBag, MyBagItem } from '../../models/bag';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-bag',
@@ -21,7 +21,8 @@ export class BagComponent implements OnInit {
 
   constructor(
     private bagService: BagService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -105,8 +106,7 @@ export class BagComponent implements OnInit {
   }
 
   proceedToCheckout(): void {
-    // Implement checkout logic here
-    alert('Proceeding to checkout...');
+    this.router.navigate(['/checkout']);
   }
 
   // Image handling - ROBUST VERSION
