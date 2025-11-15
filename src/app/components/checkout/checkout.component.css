@@ -1,0 +1,174 @@
+.checkout-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header */
+.checkout-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.checkout-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+/* Progress Steps */
+.checkout-progress {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: white;
+}
+
+.step.completed .step-number {
+  background: #198754;
+  border-color: #198754;
+  color: white;
+}
+
+.step-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+.step.active .step-label {
+  color: #1a1a1a;
+}
+
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  transition: background 0.3s ease;
+}
+
+.step-connector.active {
+  background: #198754;
+}
+
+/* Main Layout */
+.checkout-content {
+  margin-top: 2rem;
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .order-summary-sidebar {
+    order: -1;
+  }
+}
+
+/* Checkout Steps */
+.checkout-steps {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.step-content {
+  min-height: 400px;
+}
+
+.step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+}
+
+/* Address and Payment Cards */
+.address-card, .payment-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.form-check-input:checked + .form-check-label .address-card,
+.form-check-input:checked + .form-check-label .payment-card {
+  border-color: #1a1a1a !important;
+  background-color: #f8f9fa !important;
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.loading-state .spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1a1a1a;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .checkout-steps {
+    padding: 1rem;
+  }
+}

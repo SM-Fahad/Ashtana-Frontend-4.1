@@ -1,0 +1,438 @@
+<div class="checkout-container">
+  <!-- Header -->
+  <div class="checkout-header">
+    <h1 class="checkout-title">Checkout</h1>
+    <div class="checkout-progress">
+      <div class="progress-steps">
+        <div class="step" [class.active]="selectedStep === 1" [class.completed]="selectedStep > 1" (click)="goToStep(1)">
+          <div class="step-number">1</div>
+          <span class="step-label">Shipping</span>
+        </div>
+        <div class="step-connector" [class.active]="selectedStep > 1"></div>
+        
+        <div class="step" [class.active]="selectedStep === 2" [class.completed]="selectedStep > 2" (click)="goToStep(2)">
+          <div class="step-number">2</div>
+          <span class="step-label">Payment</span>
+        </div>
+        <div class="step-connector" [class.active]="selectedStep > 2"></div>
+        
+        <div class="step" [class.active]="selectedStep === 3" [class.completed]="selectedStep > 3" (click)="goToStep(3)">
+          <div class="step-number">3</div>
+          <span class="step-label">Review</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading checkout...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && bag" class="checkout-content">
+    <div class="checkout-layout">
+      <!-- Left Column - Checkout Steps -->
+      <div class="checkout-steps">
+        
+        <!-- Step 1: Shipping Address -->
+        <div *ngIf="selectedStep === 1" class="step-content">
+          <h2 class="step-title">Shipping Address</h2>
+          
+          <!-- Existing Addresses -->
+          <div class="address-selection" *ngIf="addresses.length > 0">
+            <label class="form-label fw-bold mb-3">Select Shipping Address</label>
+            <div class="address-options">
+              <div *ngFor="let address of addresses" class="address-option mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" 
+                         type="radio" 
+                         [id]="'shipping-' + address.id"
+                         [value]="address.id"
+                         formControlName="shippingAddressId"
+                         (change)="onShippingAddressChange()">
+                  <label class="form-check-label w-100" [for]="'shipping-' + address.id">
+                    <div class="address-card p-3 border rounded">
+                      <div class="address-header">
+                        <strong>{{ address.recipientName }}</strong>
+                      </div>
+                      <p class="address-text mb-1">{{ address.street }}</p>
+                      <p class="address-text mb-1">{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                      <p class="address-text mb-1">{{ address.country }}</p>
+                      <p class="address-text mb-0">📞 {{ address.phone }}</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add New Address Button -->
+          <div class="add-address-section mb-4">
+            <button class="btn btn-outline-dark w-100" (click)="showAddAddressForm = !showAddAddressForm">
+              + Add New Address
+            </button>
+          </div>
+
+          <!-- New Address Form -->
+          <div *ngIf="showAddAddressForm" class="new-address-form bg-light p-4 rounded border">
+            <h4 class="mb-3">Add New Address</h4>
+            <form [formGroup]="newAddressForm">
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Full Name *</label>
+                  <input type="text" class="form-control" formControlName="recipientName" placeholder="Enter full name">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Street Address *</label>
+                  <input type="text" class="form-control" formControlName="street" placeholder="Enter street address">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label fw-bold">City *</label>
+                  <input type="text" class="form-control" formControlName="city" placeholder="Enter city">
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-bold">State *</label>
+                  <input type="text" class="form-control" formControlName="state" placeholder="Enter state">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label fw-bold">ZIP Code *</label>
+                  <input type="text" class="form-control" formControlName="postalCode" placeholder="Enter ZIP code">
+                </div>
+                <div class="col-6">
+                  <label class="form-label fw-bold">Country *</label>
+                  <input type="text" class="form-control" formControlName="country" placeholder="Enter country">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label class="form-label fw-bold">Phone Number *</label>
+                  <input type="text" class="form-control" formControlName="phone" placeholder="Enter phone number">
+                </div>
+              </div>
+              <div class="form-actions d-flex gap-2">
+                <button type="button" class="btn btn-secondary flex-fill" (click)="showAddAddressForm = false">Cancel</button>
+                <button type="button" class="btn btn-primary flex-fill" (click)="addNewAddress()">Save Address</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- No Addresses Message -->
+          <div *ngIf="addresses.length === 0 && !showAddAddressForm" class="no-addresses text-center p-4 bg-light rounded border">
+            <p class="mb-0 text-muted">No addresses found. Please add a shipping address to continue.</p>
+          </div>
+
+          <!-- Billing Address Toggle -->
+          <div class="billing-toggle mb-3" *ngIf="addresses.length > 0">
+            <div class="form-check">
+              <input class="form-check-input" 
+                     type="checkbox" 
+                     [(ngModel)]="useSameAddress" 
+                     (change)="onUseSameAddressChange()" 
+                     [ngModelOptions]="{standalone: true}"
+                     id="useSameAddress">
+              <label class="form-check-label fw-bold" for="useSameAddress">
+                Use same address for billing
+              </label>
+            </div>
+          </div>
+
+          <!-- Billing Address Selection -->
+          <div *ngIf="!useSameAddress && addresses.length > 0" class="billing-address">
+            <label class="form-label fw-bold mb-3">Billing Address</label>
+            <div class="address-options">
+              <div *ngFor="let address of addresses" class="address-option mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" 
+                         type="radio" 
+                         [id]="'billing-' + address.id"
+                         [value]="address.id"
+                         formControlName="billingAddressId">
+                  <label class="form-check-label w-100" [for]="'billing-' + address.id">
+                    <div class="address-card p-3 border rounded">
+                      <div class="address-header">
+                        <strong>{{ address.recipientName }}</strong>
+                      </div>
+                      <p class="address-text mb-1">{{ address.street }}</p>
+                      <p class="address-text mb-1">{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                      <p class="address-text mb-0">{{ address.country }}</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step Navigation -->
+          <div class="step-actions">
+            <button class="btn btn-primary w-100" (click)="nextStep()" [disabled]="!isStep1Valid">
+              Continue to Payment
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Payment Method -->
+        <div *ngIf="selectedStep === 2" class="step-content">
+          <h2 class="step-title">Payment Method</h2>
+          
+          <div class="payment-methods">
+            <div *ngFor="let method of paymentMethods" class="form-check mb-3">
+              <input class="form-check-input" 
+                     type="radio" 
+                     [id]="'payment-' + method.value"
+                     [value]="method.value"
+                     formControlName="paymentMethod">
+              <label class="form-check-label w-100" [for]="'payment-' + method.value">
+                <div class="payment-card p-3 border rounded">
+                  <div class="d-flex align-items-center">
+                    <span class="payment-icon me-3 fs-4">{{ method.icon }}</span>
+                    <div class="flex-grow-1">
+                      <div class="payment-name fw-bold">{{ method.name }}</div>
+                      <div class="payment-description text-muted small">{{ method.description }}</div>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Payment Details (for card payments) -->
+          <div *ngIf="checkoutForm.get('paymentMethod')?.value && checkoutForm.get('paymentMethod')?.value !== 'COD'" 
+               class="payment-details bg-light p-4 rounded border mt-4">
+            <h4 class="mb-3">Card Details</h4>
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label fw-bold">Card Number</label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="1234 5678 9012 3456" 
+                       maxlength="19"
+                       formControlName="cardNumber">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6">
+                <label class="form-label fw-bold">Expiry Date</label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="MM/YY" 
+                       maxlength="5"
+                       formControlName="expiryDate">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-bold">CVV</label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="123" 
+                       maxlength="3"
+                       formControlName="cvv">
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="form-label fw-bold">Cardholder Name</label>
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="John Doe"
+                       formControlName="cardholderName">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step Navigation -->
+          <div class="step-actions d-flex gap-2 mt-4">
+            <button class="btn btn-secondary flex-fill" (click)="prevStep()">Back</button>
+            <button class="btn btn-primary flex-fill" (click)="nextStep()" [disabled]="!isStep2Valid">
+              Review Order
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Review & Place Order -->
+        <div *ngIf="selectedStep === 3" class="step-content">
+          <h2 class="step-title">Review Your Order</h2>
+          
+          <!-- Order Summary -->
+          <div class="order-review">
+            <div class="review-section bg-light p-3 rounded border mb-3">
+              <h4 class="h5 mb-3">Shipping Address</h4>
+              <div *ngIf="getSelectedShippingAddress() as address" class="review-item">
+                <p class="mb-1"><strong>{{ address.recipientName }}</strong></p>
+                <p class="mb-1">{{ address.street }}</p>
+                <p class="mb-1">{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                <p class="mb-1">{{ address.country }}</p>
+                <p class="mb-0">📞 {{ address.phone }}</p>
+              </div>
+            </div>
+
+            <div class="review-section bg-light p-3 rounded border mb-3" *ngIf="!useSameAddress">
+              <h4 class="h5 mb-3">Billing Address</h4>
+              <div *ngIf="getSelectedBillingAddress() as address" class="review-item">
+                <p class="mb-1"><strong>{{ address.recipientName }}</strong></p>
+                <p class="mb-1">{{ address.street }}</p>
+                <p class="mb-1">{{ address.city }}, {{ address.state }} {{ address.postalCode }}</p>
+                <p class="mb-0">{{ address.country }}</p>
+              </div>
+            </div>
+
+            <div class="review-section bg-light p-3 rounded border mb-3">
+              <h4 class="h5 mb-3">Payment Method</h4>
+              <div class="review-item">
+                <p class="mb-1"><strong>{{ selectedPaymentMethod }}</strong></p>
+                <p class="mb-0 text-muted" *ngIf="isCODPayment">
+                  Pay when your order is delivered
+                </p>
+              </div>
+            </div>
+
+            <div class="review-section bg-light p-3 rounded border mb-3" *ngIf="appliedCoupon">
+              <h4 class="h5 mb-3">Applied Coupon</h4>
+              <div class="review-item">
+                <p class="mb-1"><strong>{{ appliedCoupon.code }}</strong></p>
+                <p class="mb-1">Savings: ${{ couponDiscount | number:'1.2-2' }}</p>
+                <p class="mb-0" *ngIf="appliedCoupon.discountPercentage">{{ appliedCoupon.discountPercentage }}% discount applied</p>
+              </div>
+            </div>
+
+            <div class="review-section bg-light p-3 rounded border mb-3">
+              <h4 class="h5 mb-3">Order Items</h4>
+              <div class="order-items-review">
+                <div *ngFor="let item of bag.items" class="review-order-item d-flex gap-3 p-2 mb-2 bg-white rounded border">
+                  <img [src]="item.primaryImageUrl || 'assets/images/placeholder-product.jpg'" 
+                       [alt]="item.productName"
+                       class="item-image rounded" 
+                       style="width: 60px; height: 60px; object-fit: cover;">
+                  <div class="item-details flex-grow-1">
+                    <h5 class="h6 mb-1">{{ item.productName }}</h5>
+                    <p class="mb-1 text-muted small">Quantity: {{ item.quantity }}</p>
+                    <p class="mb-0 fw-bold">${{ item.totalPrice | number:'1.2-2' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms Agreement -->
+            <div class="terms-agreement mt-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="agreeToTerms" id="agreeToTerms">
+                <label class="form-check-label" for="agreeToTerms">
+                  I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step Navigation -->
+          <div class="step-actions d-flex gap-2 mt-4">
+            <button class="btn btn-secondary flex-fill" (click)="prevStep()">Back</button>
+            <button class="btn btn-primary flex-fill" 
+                    (click)="placeOrder()" 
+                    [disabled]="!isStep3Valid || processingOrder">
+              <span *ngIf="processingOrder" class="spinner-border spinner-border-sm me-2"></span>
+              {{ processingOrder ? 'Placing Order...' : 'Place Order' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Order Summary -->
+      <div class="order-summary-sidebar">
+        <div class="summary-card bg-white rounded border p-3 mb-3">
+          <h3 class="summary-title h4 mb-3">Order Summary</h3>
+          
+          <!-- Order Items -->
+          <div class="summary-items mb-3">
+            <div *ngFor="let item of bag.items" class="summary-item d-flex gap-2 p-2 mb-2 bg-light rounded">
+              <img [src]="item.primaryImageUrl || 'assets/images/placeholder-product.jpg'" 
+                   [alt]="item.productName"
+                   class="item-image rounded" 
+                   style="width: 50px; height: 50px; object-fit: cover;">
+              <div class="item-info flex-grow-1">
+                <h5 class="item-name h6 mb-1">{{ item.productName }}</h5>
+                <p class="item-quantity text-muted small mb-0">Qty: {{ item.quantity }}</p>
+              </div>
+              <span class="item-price fw-bold">${{ item.totalPrice | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <!-- Coupon Code -->
+          <div class="coupon-section mb-3">
+            <label class="form-label fw-bold mb-2">Coupon Code</label>
+            <div class="coupon-input-group d-flex gap-2">
+              <input type="text" 
+                     [(ngModel)]="couponCode" 
+                     class="form-control" 
+                     placeholder="Enter coupon code"
+                     [ngModelOptions]="{standalone: true}"
+                     [disabled]="!!appliedCoupon">
+              <button class="btn btn-outline-secondary" 
+                      (click)="appliedCoupon ? removeCoupon() : applyCoupon()"
+                      [disabled]="validatingCoupon"
+                      style="white-space: nowrap;">
+                <span *ngIf="validatingCoupon" class="spinner-border spinner-border-sm me-1"></span>
+                {{ appliedCoupon ? 'Remove' : (validatingCoupon ? 'Validating...' : 'Apply') }}
+              </button>
+            </div>
+            
+            <!-- Applied Coupon Display -->
+            <div *ngIf="appliedCoupon" class="applied-coupon mt-2">
+              <div class="alert alert-success d-flex justify-content-between align-items-center py-2">
+                <div>
+                  <strong class="small">{{ appliedCoupon.code }}</strong>
+                  <small class="d-block text-success">{{ couponSavingsText }}</small>
+                </div>
+                <button type="button" class="btn-close btn-sm" (click)="removeCoupon()"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="price-breakdown">
+            <div class="price-row d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span>${{ bag.totalPrice | number:'1.2-2' }}</span>
+            </div>
+            
+            <!-- Coupon Discount -->
+            <div *ngIf="appliedCoupon" class="price-row discount d-flex justify-content-between mb-2 text-success">
+              <span>Coupon Discount</span>
+              <span>- ${{ couponDiscount | number:'1.2-2' }}</span>
+            </div>
+            
+            <div class="price-row d-flex justify-content-between mb-2">
+              <span>Shipping</span>
+              <span>{{ shippingCost === 0 ? 'FREE' : ('$' + shippingCost | number:'1.2-2') }}</span>
+            </div>
+            <div class="price-row d-flex justify-content-between mb-2">
+              <span>Tax (12%)</span>
+              <span>${{ taxAmount | number:'1.2-2' }}</span>
+            </div>
+            <hr class="my-2">
+            <div class="price-row total d-flex justify-content-between fw-bold fs-5">
+              <span>Total</span>
+              <span>${{ estimatedTotal | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <!-- Security Badge -->
+          <div class="security-badge text-center mt-3 p-2 bg-light rounded border">
+            <div class="security-icon">🔒</div>
+            <span class="small text-muted">Secure checkout guaranteed</span>
+          </div>
+        </div>
+
+        <!-- Continue Shopping -->
+        <div class="continue-shopping text-center">
+          <a routerLink="/products" class="text-decoration-none">← Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
