@@ -56,6 +56,11 @@ checkout(checkoutRequest: CheckoutRequest): Observable<Order> {
 //   return this.http.get<Order>(`${this.apiUrl}/${orderId}`);
 // }
 
+// Add this method to your order.service.ts
+getAllOrders(): Observable<Order[]> {
+  return this.http.get<Order[]>(`${this.apiUrl}/orders`);
+}
+
 getOrder(orderId: number): Observable<Order> {
   return this.http.get<Order>(`${this.apiUrl}/orders/${orderId}`);
 }
