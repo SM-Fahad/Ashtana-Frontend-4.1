@@ -1,107 +1,116 @@
-<nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light bg-opacity-25 shadow-sm" id="mainNavbar">
-  <!-- Remove fixed-top and replace with sticky-top -->
+<nav class="navbar navbar-expand-lg sticky-top navbar-light custom-navbar" id="mainNavbar">
   <div class="container">
+    <!-- Brand Logo -->
     <a class="navbar-brand" routerLink="/">
-      <img src="assets/Ashtana-preview.png" alt="logo" style="height: 65px;">
+      <img src="assets/Ashtana-preview.png" alt="Ashtana" class="brand-logo">
+      <!-- <span class="brand-text">ASHTANA</span> -->
     </a>
+
+    <!-- Mobile Toggle -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <!-- Search Bar -->
-      <form class="d-flex w-75" role="search">
-        <input class="form-control mx-5 me-3 rounded-5" type="search" placeholder="Search for Products"
-          aria-label="Search" />
-        <button class="btn btn-dark rounded-5 me-5" type="submit"><i class="bi bi-search"></i></button>
-      </form>
+      <!-- Search Bar - Centered -->
+      <div class="search-container mx-auto">
+        <form class="d-flex search-form" role="search">
+          <div class="input-group">
+            <input class="form-control search-input" type="search" placeholder="Search for products, brands and more..."
+              aria-label="Search" />
+            <button class="btn search-btn" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
 
       <!-- Navigation Icons -->
-      <div class="navbar-nav ms-auto align-items-center flex-row">
+      <div class="navbar-nav ms-auto align-items-center flex-row nav-icons">
         
         <!-- ACCOUNT / USER INFO -->
-        <div class="nav-item me-4" *ngIf="isLoggedIn && userName">
-          <div class="text-center">
-            <a class="nav-link active" routerLink="/profile">
-              <div class="icon-wrapper">
-                <i class="bi bi-person" style="font-size: 30px;"></i>
+        <div class="nav-item" *ngIf="isLoggedIn && userName">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link" routerLink="/profile">
+              <div class="icon-container">
+                <i class="bi bi-person-circle"></i>
               </div>
-              <span class="fw-medium">{{ userName }}</span>
+              <span class="nav-label">{{ userName }}</span>
             </a>
           </div>
         </div>
 
         <!-- ADMIN (Only show if user has admin role) -->
-        <div class="nav-item me-4" *ngIf="isLoggedIn && isAdmin">
-          <div class="text-center">
-            <a class="nav-link active" routerLink="/admin">
-              <div class="icon-wrapper">
-                <i class="bi bi-gear" style="font-size: 30px;"></i>
+        <div class="nav-item" *ngIf="isLoggedIn && isAdmin">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link" routerLink="/admin">
+              <div class="icon-container">
+                <i class="bi bi-shield-check"></i>
               </div>
-              <span class="fw-medium">ADMIN</span>
+              <span class="nav-label">Admin</span>
             </a>
           </div>
         </div>
 
-        <!-- My Fav -->
-        <div class="nav-item me-4">
-          <div class="text-center">
-            <a class="nav-link active" routerLink="/favorites">
-              <div class="icon-wrapper">
-                <i class="bi bi-heart" style="font-size: 30px;"></i>
+        <!-- Favorites -->
+        <div class="nav-item">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link" routerLink="/favorites">
+              <div class="icon-container">
+                <i class="bi bi-heart"></i>
               </div>
-              <span class="fw-medium">FAVOURITES</span>
+              <span class="nav-label">Favorites</span>
             </a>
           </div>
         </div>
 
-        <!-- My Bag -->
-        <div class="nav-item me-4">
-          <div class="text-center position-relative">
-            <a class="nav-link active" routerLink="/bag">
-              <div class="icon-wrapper position-relative">
-                <i class="bi bi-bag" style="font-size: 30px;"></i>
+        <!-- Shopping Bag -->
+        <div class="nav-item">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link" routerLink="/bag">
+              <div class="icon-container position-relative">
+                <i class="bi bi-bag"></i>
                 <!-- Cart Count Badge -->
                 <span *ngIf="cartCount > 0" class="cart-badge" [class.pulse]="showPulse">
                   {{ cartCount > 99 ? '99+' : cartCount }}
                 </span>
               </div>
-              <span class="fw-medium">BAG</span>
+              <span class="nav-label">Bag</span>
             </a>
           </div>
         </div>
 
         <!-- Authentication -->
-        <div class="nav-item me-2" *ngIf="!isLoggedIn">
-          <div class="text-center">
-            <a class="nav-link active" routerLink="/login">
-              <div class="icon-wrapper">
-                <i class="bi bi-box-arrow-in-right" style="font-size: 30px;"></i>
+        <div class="nav-item" *ngIf="!isLoggedIn">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link" routerLink="/login">
+              <div class="icon-container">
+                <i class="bi bi-box-arrow-in-right"></i>
               </div>
-              <span class="fw-medium">LOGIN</span>
+              <span class="nav-label">Login</span>
             </a>
           </div>
         </div>
 
-        <div class="nav-item me-2" *ngIf="!isLoggedIn">
-          <div class="text-center">
-            <a class="nav-link active" routerLink="/signup">
-              <div class="icon-wrapper">
-                <i class="bi bi-person-plus" style="font-size: 30px;"></i>
+        <div class="nav-item" *ngIf="!isLoggedIn">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link" routerLink="/signup">
+              <div class="icon-container">
+                <i class="bi bi-person-plus"></i>
               </div>
-              <span class="fw-medium">SIGNUP</span>
+              <span class="nav-label">Sign Up</span>
             </a>
           </div>
         </div>
 
-        <div class="nav-item me-2" *ngIf="isLoggedIn">
-          <div class="text-center">
-            <a class="nav-link active" (click)="logout()" style="cursor: pointer;">
-              <div class="icon-wrapper">
-                <i class="bi bi-box-arrow-right" style="font-size: 30px;"></i>
+        <div class="nav-item" *ngIf="isLoggedIn">
+          <div class="nav-icon-wrapper">
+            <a class="nav-link logout-btn" (click)="logout()" style="cursor: pointer;">
+              <div class="icon-container">
+                <i class="bi bi-box-arrow-right"></i>
               </div>
-              <span class="fw-medium">LOGOUT</span>
+              <span class="nav-label">Logout</span>
             </a>
           </div>
         </div>
@@ -109,4 +118,3 @@
     </div>
   </div>
 </nav>
-
