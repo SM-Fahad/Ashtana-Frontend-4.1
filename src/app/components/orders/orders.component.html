@@ -1,5 +1,5 @@
 <div class="container">
-  <!-- orders.component.html -->
+<!-- orders.component.html -->
 <div class="container-fluid py-4 bg-light min-vh-100">
   <!-- Header Section -->
   <div class="row mb-4">
@@ -327,7 +327,15 @@
                           (click)="downloadInvoice(order)" 
                           [disabled]="isGeneratingInvoice[order.id]">
                     <i class="bi bi-receipt me-2"></i> 
-                    {{ isGeneratingInvoice[order.id] ? 'Generating...' : 'Download Invoice' }}
+                    <span *ngIf="isGeneratingInvoice[order.id]; else notGenerating">
+                      <span class="spinner-border spinner-border-sm me-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </span>
+                      Generating...
+                    </span>
+                    <ng-template #notGenerating>
+                      Download Invoice
+                    </ng-template>
                   </button>
                   <button *ngIf="order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && order.status !== 'SHIPPED'" 
                           class="btn btn-outline-danger" 

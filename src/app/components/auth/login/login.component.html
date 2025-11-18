@@ -1,63 +1,97 @@
-<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light py-4">
-  <div class="card border-0 shadow-lg rounded-3" style="max-width: 400px; width: 100%;">
-    <div class="card-body p-4">
-      <!-- Header -->
+<div class="min-vh-100 d-flex align-items-center justify-content-center auth-container py-4">
+  <div class="card auth-card border-0 shadow-lg rounded-3" style="max-width: 420px; width: 100%;">
+    <div class="card-body p-5">
+      
+      <!-- Header with Brand Logo -->
       <div class="text-center mb-4">
-        <h2 class="h3 fw-bold text-dark mb-2">Welcome to Ashtana</h2>
-        <p class="text-muted mb-0">Sign in to your account</p>
+        <div class="brand-header mb-3">
+          <img src="assets/Ashtana-preview.png" alt="Ashtana" class="brand-logo-large">
+        </div>
+        <h2 class="h3 fw-bold text-dark mb-2">Welcome Back</h2>
+        <p class="text-muted mb-0">Sign in to your account to continue</p>
       </div>
 
       <!-- Login Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <!-- Username -->
-        <div class="mb-3">
-          <label for="username" class="form-label small fw-semibold text-uppercase text-dark mb-2">
-            Username
+        
+        <!-- Username Field -->
+        <div class="form-group mb-3">
+          <label for="username" class="form-label small fw-semibold text-uppercase text-muted mb-2">
+            <i class="bi bi-person me-1"></i>Username
           </label>
-          <input
-            type="text"
-            id="username"
-            formControlName="username"
-            class="form-control form-control-lg border-dark"
-            [class.is-invalid]="username?.invalid && username?.touched"
-            placeholder="Enter your username">
-          <div class="invalid-feedback" *ngIf="username?.invalid && username?.touched">
-            <div *ngIf="username?.errors?.['required']">Username is required</div>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-person text-muted"></i>
+            </span>
+            <input
+              type="text"
+              id="username"
+              formControlName="username"
+              class="form-control form-control-lg border-start-0"
+              [class.is-invalid]="username?.invalid && username?.touched"
+              placeholder="Enter your username"
+              autocomplete="username">
           </div>
-        </div>
-
-        <!-- Password -->
-        <div class="mb-4">
-          <label for="password" class="form-label small fw-semibold text-uppercase text-dark mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            formControlName="password"
-            class="form-control form-control-lg border-dark"
-            [class.is-invalid]="password?.invalid && password?.touched"
-            placeholder="Enter your password">
-          <div class="invalid-feedback" *ngIf="password?.invalid && password?.touched">
-            <div *ngIf="password?.errors?.['required']">Password is required</div>
-            <div *ngIf="password?.errors?.['minlength']">
-              Password must be at least 6 characters
+          <div class="invalid-feedback mt-2" *ngIf="username?.invalid && username?.touched">
+            <div *ngIf="username?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>Username is required
             </div>
           </div>
         </div>
 
+        <!-- Password Field -->
+        <div class="form-group mb-4">
+          <label for="password" class="form-label small fw-semibold text-uppercase text-muted mb-2">
+            <i class="bi bi-lock me-1"></i>Password
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="bi bi-lock text-muted"></i>
+            </span>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              class="form-control form-control-lg border-start-0"
+              [class.is-invalid]="password?.invalid && password?.touched"
+              placeholder="Enter your password"
+              autocomplete="current-password">
+          </div>
+          <div class="invalid-feedback mt-2" *ngIf="password?.invalid && password?.touched">
+            <div *ngIf="password?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>Password is required
+            </div>
+            <div *ngIf="password?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>Password must be at least 6 characters
+            </div>
+          </div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label small text-muted" for="rememberMe">
+              Remember me
+            </label>
+          </div>
+          <a href="#" class="small text-decoration-none forgot-password">Forgot password?</a>
+        </div>
+
         <!-- Error Message -->
-        <div class="alert alert-danger d-flex align-items-center" *ngIf="errorMessage">
+        <div class="alert alert-danger d-flex align-items-center fade-in" *ngIf="errorMessage">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
-          {{ errorMessage }}
+          <span class="small">{{ errorMessage }}</span>
         </div>
 
         <!-- Submit Button -->
         <button
           type="submit"
-          class="btn btn-dark btn-lg w-100 py-2 fw-semibold"
+          class="btn auth-btn btn-lg w-100 py-3 fw-semibold mb-4"
           [disabled]="isLoading">
-          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="!isLoading">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+          </span>
           <span *ngIf="isLoading">
             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
             Signing In...
@@ -65,11 +99,29 @@
         </button>
       </form>
 
+      <!-- Divider -->
+      <div class="divider d-flex align-items-center mb-4">
+        <span class="text-muted small">Or continue with</span>
+      </div>
+
+      <!-- Social Login (Optional) -->
+      <div class="social-login text-center mb-4">
+        <button type="button" class="btn btn-outline-dark btn-sm me-2 social-btn">
+          <i class="bi bi-google"></i>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm me-2 social-btn">
+          <i class="bi bi-facebook"></i>
+        </button>
+        <button type="button" class="btn btn-outline-dark btn-sm social-btn">
+          <i class="bi bi-github"></i>
+        </button>
+      </div>
+
       <!-- Footer -->
       <div class="text-center mt-4 pt-3 border-top">
-        <p class="text-muted mb-0">
+        <p class="text-muted mb-0 small">
           Don't have an account? 
-          <a routerLink="/signup" class="text-dark fw-semibold text-decoration-none">Sign up</a>
+          <a routerLink="/signup" class="signup-link fw-semibold text-decoration-none">Create account</a>
         </p>
       </div>
     </div>

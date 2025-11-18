@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { OrderService } from '../../services/order.service';
+import { Order } from '../../models/order';
 
 interface Address {
   id: number;
@@ -36,10 +38,15 @@ export class ProfileComponent implements OnInit {
   showAddressForm = false;
   editingAddress: Address | null = null;
   loadingAddresses = false;
+  
+  // Orders properties
+  orders: Order[] = [];
+  loadingOrders = false;
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private orderService: OrderService
   ) {
     this.profileForm = this.fb.group({
       userName: ['', [Validators.required]],
@@ -104,6 +111,8 @@ export class ProfileComponent implements OnInit {
     
     if (tab === 'addresses') {
       this.loadUserAddresses();
+    } else if (tab === 'orders') {
+      this.loadUserOrders();
     }
   }
 
@@ -260,6 +269,70 @@ export class ProfileComponent implements OnInit {
       case 'BOTH': return 'Shipping & Billing';
       default: return type;
     }
+  }
+
+  // Orders Methods
+  loadUserOrders() {
+    if (this.user?.userName) {
+      this.loadingOrders = true;
+      this.orderService.getUserOrders(this.user.userName).subscribe({
+        next: (orders: Order[]) => {
+          this.orders = orders;
+          this.loadingOrders = false;
+        },
+        error: (error) => {
+          console.error('Error loading orders:', error);
+          this.errorMessage = 'Failed to load orders';
+          this.loadingOrders = false;
+          this.orders = [];
+        }
+      });
+    }
+  }
+
+  getOrdersCountByStatus(statuses: string[]): number {
+    return this.orders.filter(order => statuses.includes(order.status)).length;
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'PENDING': return 'bg-warning';
+      case 'CONFIRMED': return 'bg-info';
+      case 'PROCESSING': return 'bg-primary';
+      case 'SHIPPED': return 'bg-secondary';
+      case 'DELIVERED': return 'bg-success';
+      case 'CANCELLED': return 'bg-danger';
+      default: return 'bg-warning';
+    }
+  }
+
+  getTotalItems(order: Order): number {
+    return order.items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  formatDate(dateString: string): string {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      return 'Invalid date';
+    }
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  }
+
+  viewOrderDetails(order: Order) {
+    // Navigate to order details page or show modal
+    // For now, just navigate to the orders page
+    window.location.href = '/orders';
   }
 
   getInitials(): string {
